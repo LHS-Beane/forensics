@@ -22,7 +22,6 @@
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -313,6 +312,8 @@
     .unit-card {
       padding: 1.2rem;
       border-top: 4px solid var(--accent);
+      display: flex;
+      flex-direction: column;
     }
 
     .unit-label {
@@ -340,6 +341,11 @@
       color: var(--muted);
       font-size: 0.82rem;
       font-weight: 600;
+    }
+
+    .unit-link {
+      margin-top: 1rem;
+      width: fit-content;
     }
 
     .two-col {
@@ -516,7 +522,7 @@
           </div>
           <div class="mini-stats">
             <div class="stat"><strong>1</strong><span>Science Credit</span></div>
-            <div class="stat"><strong>12+</strong><span>Core Investigations</span></div>
+            <div class="stat"><strong>11</strong><span>Course Units</span></div>
             <div class="stat"><strong>100%</strong><span>Evidence-Based</span></div>
           </div>
         </div>
@@ -562,7 +568,7 @@
         <div class="section-head">
           <div>
             <h2>Course Units</h2>
-            <p>This is the roadmap for the year. The first unit focuses on observation, human error, and working memory before moving into formal forensic techniques.</p>
+            <p>This is the roadmap for the year. Each card can link directly to the live unit pages as you build them out.</p>
           </div>
         </div>
 
@@ -572,6 +578,7 @@
             <h3>Observation, Bias & Memory</h3>
             <p>Students investigate selective attention, eyewitness reliability, note-taking, scene sketching, and the limits of human memory.</p>
             <div class="unit-tags"><span class="tag">Observation</span><span class="tag">Working Memory</span><span class="tag">Bias</span></div>
+            <a href="units/unit1/index.html" class="btn btn-secondary unit-link">Open Unit</a>
           </article>
 
           <article class="unit-card">
@@ -579,6 +586,7 @@
             <h3>Crime Scene Investigation</h3>
             <p>We explore scene security, documentation, evidence collection, chain of custody, and proper forensic procedures.</p>
             <div class="unit-tags"><span class="tag">Sketches</span><span class="tag">Documentation</span><span class="tag">CSI</span></div>
+            <a href="units/unit2/index.html" class="btn btn-secondary unit-link">Open Unit</a>
           </article>
 
           <article class="unit-card">
@@ -586,6 +594,7 @@
             <h3>Trace Evidence</h3>
             <p>Hair, fibers, glass, soil, and other small clues help reconstruct movement, contact, and location.</p>
             <div class="unit-tags"><span class="tag">Microscopy</span><span class="tag">Comparison</span><span class="tag">Transfer</span></div>
+            <a href="units/unit3/index.html" class="btn btn-secondary unit-link">Open Unit</a>
           </article>
 
           <article class="unit-card">
@@ -593,6 +602,7 @@
             <h3>Fingerprint Analysis</h3>
             <p>Students classify prints, lift latent fingerprints, and compare ridge detail using accepted forensic methods.</p>
             <div class="unit-tags"><span class="tag">Loops</span><span class="tag">Whorls</span><span class="tag">Minutiae</span></div>
+            <a href="units/unit4/index.html" class="btn btn-secondary unit-link">Open Unit</a>
           </article>
 
           <article class="unit-card">
@@ -600,13 +610,55 @@
             <h3>Blood Evidence & DNA</h3>
             <p>We study blood typing, bloodstain patterns, and how DNA can identify or exclude a suspect.</p>
             <div class="unit-tags"><span class="tag">Spatter</span><span class="tag">Typing</span><span class="tag">DNA</span></div>
+            <a href="units/unit5/index.html" class="btn btn-secondary unit-link">Open Unit</a>
           </article>
 
           <article class="unit-card">
             <span class="unit-label">Unit 6</span>
-            <h3>Toxicology, Anthropology & Final Cases</h3>
-            <p>Students analyze poisons, skeletal clues, cause-of-death evidence, and wrap up the year with a major investigation.</p>
-            <div class="unit-tags"><span class="tag">Toxicology</span><span class="tag">Bones</span><span class="tag">Case File</span></div>
+            <h3>Toxicology</h3>
+            <p>Students examine poisons, drugs, and chemical analysis techniques used in forensic investigations.</p>
+            <div class="unit-tags"><span class="tag">Chemistry</span><span class="tag">Substances</span><span class="tag">Analysis</span></div>
+            <a href="units/unit6/index.html" class="btn btn-secondary unit-link">Open Unit</a>
+          </article>
+
+          <article class="unit-card">
+            <span class="unit-label">Unit 7</span>
+            <h3>Ballistics & Physics</h3>
+            <p>Students analyze trajectory, projectile motion, cartridge evidence, and ballistic comparisons.</p>
+            <div class="unit-tags"><span class="tag">Physics</span><span class="tag">Trajectory</span><span class="tag">Ballistics</span></div>
+            <a href="units/unit7/index.html" class="btn btn-secondary unit-link">Open Unit</a>
+          </article>
+
+          <article class="unit-card">
+            <span class="unit-label">Unit 8</span>
+            <h3>Forensic Anthropology</h3>
+            <p>We use skeletal evidence to estimate identity, age, stature, and clues about trauma.</p>
+            <div class="unit-tags"><span class="tag">Bones</span><span class="tag">Identification</span><span class="tag">Trauma</span></div>
+            <a href="units/unit8/index.html" class="btn btn-secondary unit-link">Open Unit</a>
+          </article>
+
+          <article class="unit-card">
+            <span class="unit-label">Unit 9</span>
+            <h3>Forensic Entomology</h3>
+            <p>Students study insect evidence and how life cycles can help estimate time since death.</p>
+            <div class="unit-tags"><span class="tag">Insects</span><span class="tag">Time of Death</span><span class="tag">Biology</span></div>
+            <a href="units/unit9/index.html" class="btn btn-secondary unit-link">Open Unit</a>
+          </article>
+
+          <article class="unit-card">
+            <span class="unit-label">Unit 10</span>
+            <h3>Arson Investigation</h3>
+            <p>Students explore burn patterns, fire behavior, and the chemistry behind arson analysis.</p>
+            <div class="unit-tags"><span class="tag">Fire</span><span class="tag">Patterns</span><span class="tag">Chemistry</span></div>
+            <a href="units/unit10/index.html" class="btn btn-secondary unit-link">Open Unit</a>
+          </article>
+
+          <article class="unit-card">
+            <span class="unit-label">Unit 11</span>
+            <h3>Final Case Investigation</h3>
+            <p>Students synthesize the full year of evidence and present a scientific argument for what happened.</p>
+            <div class="unit-tags"><span class="tag">Capstone</span><span class="tag">Evidence Chain</span><span class="tag">Presentation</span></div>
+            <a href="units/unit11/index.html" class="btn btn-secondary unit-link">Open Unit</a>
           </article>
         </div>
       </div>
@@ -681,6 +733,8 @@
         <div>
           <strong>Forensic Science Course Hub</strong>
           <p>Built for a full-year high school forensic science class.</p>
+          <p style="margin-top:0.65rem;"><strong>Mr. Beane</strong><br>Louisville High School<br>Louisville, Ohio</p>
+          <p style="margin-top:0.5rem;"><a class="muted-link" href="mailto:andy.beane@lepapps.org">andy.beane@lepapps.org</a></p>
         </div>
         <div>
           <a class="muted-link" href="#resources">Update links as your GitHub site grows</a>
@@ -690,3 +744,4 @@
   </footer>
 </body>
 </html>
+
