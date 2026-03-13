@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASE FILE: #2024-88RT - Interactive Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Roboto+Mono:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; 
+        }
+
+        h1, h2, h3, .mono-text {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Scrollbar for inner elements */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+
+    <!-- Chosen Palette: Slate and Neutral Grays with Crimson Accents (Professional Forensics/Police Dashboard Theme) -->
+    <!-- Application Structure Plan: The SPA is structured as a tabbed digital case file dashboard. This design was chosen because it allows students to compartmentalize their investigation, mimicking a real police database. The flow moves from initial incident facts (Overview), to people involved (Profiles & Suspects), to interactive evidence gathering (Scene Analysis), and concludes with synthesis (Investigator's Log). This non-linear structure lets students cross-reference information easily. -->
+    <!-- Visualization & Content Choices: 1. Incident Details -> Goal: Inform -> Method: Tabbed textual dashboard -> Interaction: Tab switching -> Justification: Organizes text clearly without overwhelming the user. 2. Suspect Threat Assessment -> Goal: Compare -> Method: Chart.js Radar Chart -> Interaction: Hover tooltips -> Justification: Provides a visual, quantitative baseline for students to compare subjective suspect motives and access, engaging them beyond just reading statements. 3. Scene Analysis -> Goal: Organize/Analyze -> Method: HTML Form & Dynamic Table (JS) -> Interaction: User inputs data -> Justification: Transforms a static worksheet exercise into an interactive digital evidence log. 4. Investigator Log -> Goal: Synthesize -> Method: Textarea with simulated save -> Interaction: Typing and saving state -> Justification: Encourages active learning and documentation. Library: Vanilla JS & Chart.js used. CONFIRMING: NO SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+</head>
+<body class="text-slate-800 antialiased h-screen flex flex-col overflow-hidden">
+
+    <header class="bg-slate-900 text-slate-100 p-4 border-b-4 border-red-800 shadow-md flex justify-between items-center z-10 shrink-0">
+        <div>
+            <h1 class="text-xl md:text-2xl font-bold tracking-wider text-red-500">CASE FILE: #2024-88RT <span class="text-slate-400 text-sm md:text-lg font-normal ml-2">CONFIDENTIAL</span></h1>
+            <p class="text-xs md:text-sm text-slate-300 mono-text mt-1">SUBJECT: Homicide of Dr. Adrian Keller | LOCATION: Redwood High School</p>
+        </div>
+        <div class="hidden md:flex flex-col items-end">
+            <span class="text-xs text-slate-400 uppercase tracking-widest">Status</span>
+            <span class="text-sm font-bold text-red-500 uppercase tracking-widest animate-pulse">Active Investigation</span>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        
+        <aside class="w-16 md:w-64 bg-slate-800 text-slate-300 flex-shrink-0 flex flex-col border-r border-slate-700 transition-all duration-300 z-10">
+            <div class="p-4 border-b border-slate-700 hidden md:block">
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Assigned To</p>
+                <p class="text-sm mono-text text-slate-200">Student Investigator Unit</p>
+            </div>
+            <nav class="flex-1 overflow-y-auto py-4 space-y-2">
+                <button onclick="switchTab('tab-incident')" class="nav-btn w-full flex items-center px-4 py-3 hover:bg-slate-700 hover:text-white transition-colors border-l-4 border-transparent focus:outline-none" data-target="tab-incident">
+                    <span class="text-xl w-8 text-center">&#128196;</span>
+                    <span class="hidden md:block ml-3 text-sm font-medium tracking-wide">Incident Report</span>
+                </button>
+                <button onclick="switchTab('tab-profiles')" class="nav-btn w-full flex items-center px-4 py-3 hover:bg-slate-700 hover:text-white transition-colors border-l-4 border-transparent focus:outline-none" data-target="tab-profiles">
+                    <span class="text-xl w-8 text-center">&#128101;</span>
+                    <span class="hidden md:block ml-3 text-sm font-medium tracking-wide">Victim & Suspects</span>
+                </button>
+                <button onclick="switchTab('tab-analysis')" class="nav-btn w-full flex items-center px-4 py-3 hover:bg-slate-700 hover:text-white transition-colors border-l-4 border-transparent focus:outline-none" data-target="tab-analysis">
+                    <span class="text-xl w-8 text-center">&#128269;</span>
+                    <span class="hidden md:block ml-3 text-sm font-medium tracking-wide">Scene Analysis</span>
+                </button>
+                <button onclick="switchTab('tab-log')" class="nav-btn w-full flex items-center px-4 py-3 hover:bg-slate-700 hover:text-white transition-colors border-l-4 border-transparent focus:outline-none" data-target="tab-log">
+                    <span class="text-xl w-8 text-center">&#9997;</span>
+                    <span class="hidden md:block ml-3 text-sm font-medium tracking-wide">Investigator's Log</span>
+                </button>
+            </nav>
+        </aside>
+
+        <main class="flex-1 bg-slate-50 overflow-y-auto p-4 md:p-8 relative">
+            
+            <div id="tab-incident" class="tab-content active max-w-4xl mx-auto">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800 border-b-2 border-slate-200 pb-2 mb-4">1. Incident Narrative</h2>
+                    <p class="text-sm text-slate-600 mb-6 bg-slate-100 p-3 rounded border border-slate-200">
+                        <strong>Purpose:</strong> This section provides the foundational facts of the case. Read through the initial report from Sgt. Marcus Miller to understand the timeline of discovery and the preliminary state of the crime scene.
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-start mb-6 border-b border-slate-100 pb-4">
+                        <div>
+                            <p class="text-sm text-slate-500 uppercase font-semibold">Reporting Officer</p>
+                            <p class="text-lg mono-text text-slate-800">Sgt. Marcus Miller</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-slate-500 uppercase font-semibold">Date of Discovery</p>
+                            <p class="text-lg mono-text text-slate-800">October 3</p>
+                        </div>
+                    </div>
+
+                    <div class="prose max-w-none text-slate-700 space-y-4">
+                        <p class="leading-relaxed">
+                            <span class="mono-text font-bold text-slate-900 bg-slate-200 px-1 rounded">16:35 HOURS</span> - The evening custodian, Mr. Henderson, contacted campus security after discovering Dr. Adrian Keller (Age: 44) unresponsive in Lab 204. Upon arrival, paramedics pronounced the victim deceased. The scene was immediately cordoned off.
+                        </p>
+                        <p class="leading-relaxed">
+                            The victim was found in a prone position near the central lab island. Initial visual inspection shows a broken beaker near the victim's hand and a tipped-over chair. No obvious entry points were forced; the door was reportedly locked until the custodian arrived.
+                        </p>
+                    </div>
+
+                    <div class="mt-8 bg-red-50 border-l-4 border-red-500 p-4 rounded-r">
+                        <h3 class="text-red-800 font-bold uppercase tracking-wider text-sm mb-2">Initial Scene Flags</h3>
+                        <ul class="list-disc list-inside text-sm text-red-900 space-y-1">
+                            <li>Broken beaker near victim's hand</li>
+                            <li>Tipped-over chair</li>
+                            <li>No forced entry (door locked prior to discovery)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-profiles" class="tab-content max-w-5xl mx-auto">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800 border-b-2 border-slate-200 pb-2 mb-4">2. Victim & Suspect Profiles</h2>
+                    <p class="text-sm text-slate-600 mb-6 bg-slate-100 p-3 rounded border border-slate-200">
+                        <strong>Purpose:</strong> Understand the central figures in this investigation. Review the victim's background and analyze the preliminary suspect list. Use the Preliminary Threat Assessment chart to visualize the initial assessment of Means, Motive, and Opportunity (Access) based on preliminary interviews.
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-8">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                        <span class="text-2xl mr-2">&#128100;</span> Initial Victim Profile
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="col-span-1 flex flex-col items-center justify-center bg-slate-100 rounded-lg p-4 border border-slate-200">
+                            <div class="w-32 h-32 bg-slate-300 rounded-full flex items-center justify-center text-4xl mb-4 border-4 border-white shadow">
+                                &#128116;
+                            </div>
+                            <h4 class="font-bold text-lg">Dr. Adrian Keller</h4>
+                            <p class="text-sm text-slate-500 uppercase tracking-widest">Deceased</p>
+                        </div>
+                        <div class="col-span-1 md:col-span-2 space-y-4">
+                            <div>
+                                <h5 class="text-sm font-semibold text-slate-500 uppercase">Occupation</h5>
+                                <p class="text-slate-800">Lead Chemistry/Forensics Teacher, Science Dept. Chair.</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-semibold text-slate-500 uppercase">Background</h5>
+                                <p class="text-slate-800">15 years at Redwood High. Known as a "tough but fair" grader.</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-semibold text-slate-500 uppercase">Current Projects</h5>
+                                <p class="text-slate-800">Working on a grant-funded research project regarding synthetic polymers with a local University partner.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">3. Preliminary Suspect List</h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    
+                    <div class="space-y-4">
+                        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                            <button class="w-full text-left px-4 py-3 bg-slate-100 hover:bg-slate-200 font-bold text-slate-800 flex justify-between items-center focus:outline-none" onclick="toggleSuspect('suspect-1')">
+                                <span>Leo Vance <span class="text-xs font-normal text-slate-500 ml-2">(Senior Student)</span></span>
+                                <span>&#9660;</span>
+                            </button>
+                            <div id="suspect-1" class="hidden p-4 text-sm text-slate-700 bg-white">
+                                <p><strong class="text-slate-900">Initial Statement:</strong> "I was in the library. He failed me on my mid-term, but I wouldn't kill him over a grade."</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                            <button class="w-full text-left px-4 py-3 bg-slate-100 hover:bg-slate-200 font-bold text-slate-800 flex justify-between items-center focus:outline-none" onclick="toggleSuspect('suspect-2')">
+                                <span>Dr. Elena Rossi <span class="text-xs font-normal text-slate-500 ml-2">(Research Partner)</span></span>
+                                <span>&#9660;</span>
+                            </button>
+                            <div id="suspect-2" class="hidden p-4 text-sm text-slate-700 bg-white">
+                                <p><strong class="text-slate-900">Initial Statement:</strong> "We had a disagreement over the patent rights, but we were supposed to meet at 5 PM to settle it."</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                            <button class="w-full text-left px-4 py-3 bg-slate-100 hover:bg-slate-200 font-bold text-slate-800 flex justify-between items-center focus:outline-none" onclick="toggleSuspect('suspect-3')">
+                                <span>Sarah Jenkins <span class="text-xs font-normal text-slate-500 ml-2">(Colleague - Bio)</span></span>
+                                <span>&#9660;</span>
+                            </button>
+                            <div id="suspect-3" class="hidden p-4 text-sm text-slate-700 bg-white">
+                                <p><strong class="text-slate-900">Initial Statement:</strong> "I was in my room (206) grading papers. I heard a loud thud around 4 PM, but I thought it was just Dr. Keller dropping a book."</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                            <button class="w-full text-left px-4 py-3 bg-slate-100 hover:bg-slate-200 font-bold text-slate-800 flex justify-between items-center focus:outline-none" onclick="toggleSuspect('suspect-4')">
+                                <span>Ray Henderson <span class="text-xs font-normal text-slate-500 ml-2">(Custodian)</span></span>
+                                <span>&#9660;</span>
+                            </button>
+                            <div id="suspect-4" class="hidden p-4 text-sm text-slate-700 bg-white">
+                                <p><strong class="text-slate-900">Initial Statement:</strong> "I just walked in to empty the bins. The lights were off. I tripped over his feet before I realized he was there."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex flex-col items-center">
+                        <h4 class="text-center font-bold text-slate-700 text-sm uppercase tracking-wider mb-2">Preliminary Threat Assessment (Estimates)</h4>
+                        <div class="chart-container flex-1 w-full">
+                            <canvas id="suspectRadarChart"></canvas>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 text-center">*Based on preliminary interviews estimating Means, Motive, and Opportunity (Access).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-analysis" class="tab-content max-w-5xl mx-auto">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800 border-b-2 border-slate-200 pb-2 mb-4">4. Crime Scene Photograph Analysis</h2>
+                    <p class="text-sm text-slate-600 mb-6 bg-slate-100 p-3 rounded border border-slate-200">
+                        <strong>Purpose:</strong> Observation is the foundation of forensics. While waiting for Scene Photo 1-B, use this digital log to categorize expected laboratory items versus suspicious elements based on the Incident Narrative and your general knowledge of science classrooms. Add items to the log below.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <div class="col-span-1 bg-white p-5 rounded-lg shadow-sm border border-slate-200 self-start">
+                        <h3 class="font-bold text-lg mb-4 text-slate-800">Log New Evidence</h3>
+                        <form id="evidence-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Item Observed</label>
+                                <input type="text" id="item-name" class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500" placeholder="e.g., Beaker, Chair" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">General Location</label>
+                                <input type="text" id="item-location" class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500" placeholder="e.g., Near hand, Floor" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                                <select id="item-category" class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500">
+                                    <option value="Expected">Expected (Belongs in lab)</option>
+                                    <option value="Suspicious">Suspicious (Out of place/Struggle)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-slate-800 text-white font-bold py-2 px-4 rounded hover:bg-slate-700 transition duration-200 text-sm">
+                                + Add to Log
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="col-span-1 lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                            <h3 class="font-bold text-lg text-slate-800">Investigator's Item Log</h3>
+                            <span class="text-xs font-mono bg-slate-200 text-slate-700 px-2 py-1 rounded">EXERCISE 1</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-slate-600">
+                                <thead class="text-xs text-slate-500 uppercase bg-slate-100 border-b border-slate-200">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">#</th>
+                                        <th scope="col" class="px-6 py-3">Item Observed</th>
+                                        <th scope="col" class="px-6 py-3">Location</th>
+                                        <th scope="col" class="px-6 py-3">Category</th>
+                                        <th scope="col" class="px-6 py-3">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="evidence-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="empty-state" class="text-center py-8 text-slate-400 text-sm">
+                            Log is currently empty. Use the form to add observed items.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-log" class="tab-content max-w-4xl mx-auto h-full flex flex-col">
+                <div class="mb-4 shrink-0">
+                    <h2 class="text-2xl font-bold text-slate-800 border-b-2 border-slate-200 pb-2 mb-2">5. Investigator's Log: Day 1 Inferences</h2>
+                    <p class="text-sm text-slate-600 bg-slate-100 p-3 rounded border border-slate-200">
+                        <strong>Purpose:</strong> Synthesize the information. Based on the position of the body and the initial statements, what is your <strong>primary hypothesis</strong>? Is this an accident, a medical emergency, or foul play? Explain your reasoning using one piece of "Trace Evidence" you <em>think</em> you might find later.
+                    </p>
+                </div>
+
+                <div class="flex-1 flex flex-col bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-800 text-slate-200 px-4 py-2 text-sm mono-text flex justify-between items-center shrink-0">
+                        <span>// SECURE ENTRY</span>
+                        <span id="log-status" class="text-emerald-400">Ready</span>
+                    </div>
+                    <textarea id="investigator-notes" class="flex-1 w-full p-6 text-slate-700 focus:outline-none resize-none mono-text text-sm leading-relaxed" placeholder="Enter your Day 1 hypotheses and inferences here..."></textarea>
+                    <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
+                        <button onclick="saveNotes()" class="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-6 rounded shadow transition duration-200 flex items-center">
+                            <span class="mr-2">&#128190;</span> Save to Case File
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        let currentTab = 'tab-incident';
+        let chartInstance = null;
+        let evidenceList = [
+            { id: 1, name: "Broken Beaker", location: "Near victim's hand", category: "Suspicious" },
+            { id: 2, name: "Tipped Chair", location: "Near central lab island", category: "Suspicious" }
+        ];
+        let nextEvidenceId = 3;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('border-red-500', 'bg-slate-700', 'text-white');
+                el.classList.add('border-transparent');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            
+            const activeBtn = document.querySelector(`.nav-btn[data-target="${tabId}"]`);
+            if(activeBtn) {
+                activeBtn.classList.remove('border-transparent');
+                activeBtn.classList.add('border-red-500', 'bg-slate-700', 'text-white');
+            }
+
+            if (tabId === 'tab-profiles' && !chartInstance) {
+                renderChart();
+            }
+
+            currentTab = tabId;
+        }
+
+        function toggleSuspect(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('suspectRadarChart').getContext('2d');
+            
+            const data = {
+                labels: ['Motive (Reason)', 'Access (Opportunity)', 'Means (Capability)'],
+                datasets: [
+                    {
+                        label: 'L. Vance (Student)',
+                        data: [7, 6, 3],
+                        fill: true,
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: 'rgb(59, 130, 246)',
+                        pointBackgroundColor: 'rgb(59, 130, 246)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(59, 130, 246)'
+                    },
+                    {
+                        label: 'Dr. E. Rossi (Partner)',
+                        data: [8, 8, 8],
+                        fill: true,
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        borderColor: 'rgb(239, 68, 68)',
+                        pointBackgroundColor: 'rgb(239, 68, 68)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(239, 68, 68)'
+                    },
+                    {
+                        label: 'S. Jenkins (Colleague)',
+                        data: [4, 9, 6],
+                        fill: true,
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        borderColor: 'rgb(16, 185, 129)',
+                        pointBackgroundColor: 'rgb(16, 185, 129)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(16, 185, 129)'
+                    },
+                    {
+                        label: 'R. Henderson (Custodian)',
+                        data: [2, 10, 4],
+                        fill: true,
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                        borderColor: 'rgb(245, 158, 11)',
+                        pointBackgroundColor: 'rgb(245, 158, 11)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(245, 158, 11)'
+                    }
+                ]
+            };
+
+            const config = {
+                type: 'radar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: {
+                                font: { size: 11, family: "'Inter', sans-serif", weight: 'bold' },
+                                color: '#475569'
+                            },
+                            ticks: { display: false, min: 0, max: 10 }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 10, family: "'Inter', sans-serif" },
+                                padding: 10,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.r !== null) { label += context.parsed.r + '/10'; }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                },
+            };
+
+            chartInstance = new Chart(ctx, config);
+        }
+
+        function renderEvidenceTable() {
+            const tbody = document.getElementById('evidence-table-body');
+            const emptyState = document.getElementById('empty-state');
+            tbody.innerHTML = '';
+
+            if (evidenceList.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            evidenceList.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'bg-white border-b border-slate-100 hover:bg-slate-50';
+                
+                const badgeClass = item.category === 'Suspicious' ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-800';
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-mono text-slate-500">${index + 1}</td>
+                    <td class="px-6 py-4 font-medium text-slate-900">${item.name}</td>
+                    <td class="px-6 py-4">${item.location}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded ${badgeClass}">${item.category}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <button onclick="deleteEvidence(${item.id})" class="text-slate-400 hover:text-red-600 transition-colors" title="Remove">
+                            &#10005;
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function deleteEvidence(id) {
+            evidenceList = evidenceList.filter(item => item.id !== id);
+            renderEvidenceTable();
+        }
+
+        document.getElementById('evidence-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('item-name').value;
+            const location = document.getElementById('item-location').value;
+            const category = document.getElementById('item-category').value;
+
+            evidenceList.push({
+                id: nextEvidenceId++,
+                name: name,
+                location: location,
+                category: category
+            });
+
+            this.reset();
+            renderEvidenceTable();
+        });
+
+        function saveNotes() {
+            const btn = event.currentTarget;
+            const status = document.getElementById('log-status');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '&#8987; Saving...';
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            status.textContent = 'Syncing...';
+            status.classList.replace('text-emerald-400', 'text-amber-400');
+
+            // Simulate API call/save
+            setTimeout(() => {
+                btn.innerHTML = '&#10003; Saved';
+                btn.classList.remove('bg-red-700', 'hover:bg-red-800');
+                btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                status.textContent = 'Saved Locally';
+                status.classList.replace('text-amber-400', 'text-emerald-400');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700', 'opacity-75', 'cursor-not-allowed');
+                    btn.classList.add('bg-red-700', 'hover:bg-red-800');
+                }, 2000);
+            }, 800);
+        }
+
+        // Initialize default tab styling and table data on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeBtn = document.querySelector(`.nav-btn[data-target="${currentTab}"]`);
+            if(activeBtn) {
+                activeBtn.classList.remove('border-transparent');
+                activeBtn.classList.add('border-red-500', 'bg-slate-700', 'text-white');
+            }
+            renderEvidenceTable();
+        });
+
+    </script>
+</body>
+</html>
