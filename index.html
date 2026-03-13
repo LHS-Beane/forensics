@@ -1,1 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forensic Science | Course Hub</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #131a2e;
+      --panel-2: #1b2540;
+      --accent: #00c2ff;
+      --accent-2: #7df9ff;
+      --gold: #ffd166;
+      --text: #ecf2ff;
+      --muted: #a8b4d1;
+      --line: rgba(255,255,255,0.1);
+      --danger: #ff5c7a;
+      --success: #5ee2a0;
+      --shadow: 0 18px 45px rgba(0,0,0,0.35);
+      --radius: 22px;
+    }
 
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(0,194,255,0.16), transparent 24%),
+        radial-gradient(circle at left center, rgba(255,209,102,0.09), transparent 20%),
+        linear-gradient(180deg, #09101f 0%, #0d1326 100%);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(1200px, calc(100% - 2rem));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      background: rgba(8, 12, 24, 0.72);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 0;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      color: #08111f;
+      font-size: 1.1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .hero {
+      padding: 4.5rem 0 3rem;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 2rem;
+      align-items: stretch;
+    }
+
+    .hero-card, .feature-card, .unit-card, .info-card, .quick-card, .footer-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 2.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -60px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(0,194,255,0.18), transparent 65%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(0,194,255,0.12);
+      color: var(--accent-2);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 0.75rem; }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 4.25rem);
+      max-width: 12ch;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 62ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.2rem;
+      border-radius: 14px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      transition: 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #4fe4ff);
+      color: #07111c;
+      border: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+    }
+
+    .hero-side {
+      padding: 1.3rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .scene-box {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 1rem;
+      min-height: 210px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scene-title {
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+
+    .scene-sub {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+    }
+
+    .evidence {
+      border-radius: 16px;
+      padding: 0.85rem;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      min-height: 92px;
+    }
+
+    .evidence span {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+    }
+
+    .stat {
+      background: var(--panel-2);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.5rem;
+      color: var(--gold);
+    }
+
+    section {
+      padding: 1rem 0 2.5rem;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      max-width: 60ch;
+      margin: 0;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .feature-card {
+      padding: 1.25rem;
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(0,194,255,0.12);
+      font-size: 1.2rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .feature-card p,
+    .unit-card p,
+    .info-card p,
+    .quick-card p,
+    .footer-card p {
+      color: var(--muted);
+      margin: 0;
+      font-size: 0.96rem;
+    }
+
+    .unit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .unit-card {
+      padding: 1.2rem;
+      border-top: 4px solid var(--accent);
+    }
+
+    .unit-label {
+      display: inline-block;
+      font-size: 0.78rem;
+      color: var(--accent-2);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.55rem;
+    }
+
+    .unit-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tag {
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 1rem;
+    }
+
+    .info-card,
+    .quick-card,
+    .footer-card {
+      padding: 1.5rem;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .check {
+      display: flex;
+      gap: 0.8rem;
+      align-items: flex-start;
+      padding: 0.8rem 0.9rem;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+    }
+
+    .check b { color: var(--text); }
+
+    .resource-list {
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .resource-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      padding: 0.95rem 1rem;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+    }
+
+    .resource-item small {
+      color: var(--muted);
+      display: block;
+      margin-top: 0.15rem;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.live { background: rgba(94,226,160,0.12); color: var(--success); }
+    .pill.building { background: rgba(255,209,102,0.12); color: var(--gold); }
+    .pill.soon { background: rgba(255,92,122,0.12); color: var(--danger); }
+
+    footer {
+      padding: 0 0 3rem;
+    }
+
+    .footer-card {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .muted-link {
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+
+    @media (max-width: 1000px) {
+      .hero-grid,
+      .two-col,
+      .features,
+      .unit-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .features {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .features,
+      .unit-grid,
+      .two-col,
+      .mini-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-card,
+      .info-card,
+      .quick-card,
+      .footer-card {
+        padding: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container nav">
+      <a href="#top" class="brand">
+        <div class="brand-badge">🧪</div>
+        <div>
+          <div>Forensic Science</div>
+          <small style="color: var(--muted); font-weight: 600;">Course Hub</small>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#units">Units</a>
+        <a href="#resources">Resources</a>
+        <a href="#investigate">Investigate</a>
+      </div>
+    </div>
+  </div>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-card">
+          <div class="eyebrow">🔎 Observe. Analyze. Reconstruct.</div>
+          <h1>Welcome to Forensic Science</h1>
+          <p>
+            In this course, we study how science helps investigators solve mysteries, test claims, and separate
+            fact from assumption. We begin with the most important tool in the room: <strong>the human mind</strong>—and its limits.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#units">Explore Units</a>
+            <a class="btn btn-secondary" href="#resources">Open Course Resources</a>
+          </div>
+        </div>
+
+        <div class="hero-side hero-card">
+          <div class="scene-box">
+            <div class="scene-title">Starter Case File</div>
+            <div class="scene-sub">Can you trust what you think you saw?</div>
+            <div class="evidence-grid">
+              <div class="evidence">👣 Shoe Print<span>Partial impression near the doorway</span></div>
+              <div class="evidence">🧠 Eyewitness Note<span>Conflicting descriptions from witnesses</span></div>
+              <div class="evidence">🧬 Fiber Sample<span>Blue thread recovered from the desk</span></div>
+              <div class="evidence">📝 Sketch Log<span>Scene diagram with missing details</span></div>
+            </div>
+          </div>
+          <div class="mini-stats">
+            <div class="stat"><strong>1</strong><span>Science Credit</span></div>
+            <div class="stat"><strong>12+</strong><span>Core Investigations</span></div>
+            <div class="stat"><strong>100%</strong><span>Evidence-Based</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>About This Course</h2>
+            <p>This course blends biology, chemistry, physics, and critical thinking through crime scene analysis, evidence testing, and case-based investigations.</p>
+          </div>
+        </div>
+
+        <div class="features">
+          <article class="feature-card">
+            <div class="icon">👁️</div>
+            <h3>Observation First</h3>
+            <p>We start by studying perception, attention, bias, and memory so students understand why evidence matters.</p>
+          </article>
+          <article class="feature-card">
+            <div class="icon">🧪</div>
+            <h3>Science in Action</h3>
+            <p>Students apply real scientific reasoning to fingerprints, blood, DNA, trace evidence, toxicology, and more.</p>
+          </article>
+          <article class="feature-card">
+            <div class="icon">📁</div>
+            <h3>Case-Based Learning</h3>
+            <p>Each unit connects to investigations, suspect statements, physical evidence, and courtroom-style conclusions.</p>
+          </article>
+          <article class="feature-card">
+            <div class="icon">🧭</div>
+            <h3>Thinking Like an Investigator</h3>
+            <p>Students learn to slow down, document carefully, challenge assumptions, and defend conclusions with evidence.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="units">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>Course Units</h2>
+            <p>This is the roadmap for the year. The first unit focuses on observation, human error, and working memory before moving into formal forensic techniques.</p>
+          </div>
+        </div>
+
+        <div class="unit-grid">
+          <article class="unit-card">
+            <span class="unit-label">Unit 1</span>
+            <h3>Observation, Bias & Memory</h3>
+            <p>Students investigate selective attention, eyewitness reliability, note-taking, scene sketching, and the limits of human memory.</p>
+            <div class="unit-tags"><span class="tag">Observation</span><span class="tag">Working Memory</span><span class="tag">Bias</span></div>
+          </article>
+
+          <article class="unit-card">
+            <span class="unit-label">Unit 2</span>
+            <h3>Crime Scene Investigation</h3>
+            <p>We explore scene security, documentation, evidence collection, chain of custody, and proper forensic procedures.</p>
+            <div class="unit-tags"><span class="tag">Sketches</span><span class="tag">Documentation</span><span class="tag">CSI</span></div>
+          </article>
+
+          <article class="unit-card">
+            <span class="unit-label">Unit 3</span>
+            <h3>Trace Evidence</h3>
+            <p>Hair, fibers, glass, soil, and other small clues help reconstruct movement, contact, and location.</p>
+            <div class="unit-tags"><span class="tag">Microscopy</span><span class="tag">Comparison</span><span class="tag">Transfer</span></div>
+          </article>
+
+          <article class="unit-card">
+            <span class="unit-label">Unit 4</span>
+            <h3>Fingerprint Analysis</h3>
+            <p>Students classify prints, lift latent fingerprints, and compare ridge detail using accepted forensic methods.</p>
+            <div class="unit-tags"><span class="tag">Loops</span><span class="tag">Whorls</span><span class="tag">Minutiae</span></div>
+          </article>
+
+          <article class="unit-card">
+            <span class="unit-label">Unit 5</span>
+            <h3>Blood Evidence & DNA</h3>
+            <p>We study blood typing, bloodstain patterns, and how DNA can identify or exclude a suspect.</p>
+            <div class="unit-tags"><span class="tag">Spatter</span><span class="tag">Typing</span><span class="tag">DNA</span></div>
+          </article>
+
+          <article class="unit-card">
+            <span class="unit-label">Unit 6</span>
+            <h3>Toxicology, Anthropology & Final Cases</h3>
+            <p>Students analyze poisons, skeletal clues, cause-of-death evidence, and wrap up the year with a major investigation.</p>
+            <div class="unit-tags"><span class="tag">Toxicology</span><span class="tag">Bones</span><span class="tag">Case File</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="resources">
+      <div class="container two-col">
+        <article class="info-card">
+          <h2>How to Succeed in This Class</h2>
+          <p>Strong forensic students are careful, curious, and evidence-driven. This course rewards good thinking more than fast guessing.</p>
+          <div class="checklist">
+            <div class="check"><div>✅</div><div><b>Write everything down.</b><br><span style="color: var(--muted);">Good notes beat shaky memory.</span></div></div>
+            <div class="check"><div>✅</div><div><b>Separate observation from inference.</b><br><span style="color: var(--muted);">Describe what is there before deciding what it means.</span></div></div>
+            <div class="check"><div>✅</div><div><b>Challenge your assumptions.</b><br><span style="color: var(--muted);">Bias is one of the biggest threats to accurate conclusions.</span></div></div>
+            <div class="check"><div>✅</div><div><b>Use evidence to support claims.</b><br><span style="color: var(--muted);">Every conclusion should trace back to something observable.</span></div></div>
+          </div>
+        </article>
+
+        <article class="quick-card">
+          <h2>Course Resources</h2>
+          <p>Add links to your GitHub files here as you build the course.</p>
+          <div class="resource-list">
+            <div class="resource-item">
+              <div>
+                <strong>Syllabus</strong>
+                <small>Course policies, grading, expectations</small>
+              </div>
+              <span class="pill building">Building</span>
+            </div>
+            <div class="resource-item">
+              <div>
+                <strong>Unit 1 Workbook</strong>
+                <small>Observation, memory, and bias activities</small>
+              </div>
+              <span class="pill soon">Coming Soon</span>
+            </div>
+            <div class="resource-item">
+              <div>
+                <strong>Case Files</strong>
+                <small>Printable evidence sets and investigation prompts</small>
+              </div>
+              <span class="pill soon">Coming Soon</span>
+            </div>
+            <div class="resource-item">
+              <div>
+                <strong>Lab Resources</strong>
+                <small>Procedures, templates, and data sheets</small>
+              </div>
+              <span class="pill building">Building</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="investigate">
+      <div class="container">
+        <div class="footer-card">
+          <div>
+            <h2>Ready to investigate?</h2>
+            <p>This course asks one big question all year long: <strong>What really happened, and how do we know?</strong></p>
+          </div>
+          <a href="#top" class="btn btn-primary">Back to Top</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-card">
+        <div>
+          <strong>Forensic Science Course Hub</strong>
+          <p>Built for a full-year high school forensic science class.</p>
+        </div>
+        <div>
+          <a class="muted-link" href="#resources">Update links as your GitHub site grows</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
